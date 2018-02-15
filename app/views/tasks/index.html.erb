@@ -6,5 +6,6 @@
     <% #リンク先のtaskは、モデルインスタンス。taskpath(task)自動的にshowアクションにリンクしてくれる。 %>
   <% end %>
 </ul>
+<%= paginate @tasks %>
 
 <%= link_to "タスク新規作成" , new_task_path(@task) %>
