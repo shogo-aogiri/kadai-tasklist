@@ -1,11 +1,17 @@
 class TasksController < ApplicationController
   before_action :set_task, only: [:show, :edit, :update, :destroy]
+  before_action :current_user, only: [:edit, :update, :show, :destroy]
+  before_action :require_user_logged_in
   
   def index
-    @tasks = Task.all.page(params[:page])
+    if logged_in?
+      @user = current_user
+      @tasks =current_user.tasks.order("created_at DESC").page(params[:page])
+    end
   end
 
   def show
+    @task = current_user.tasks.find(params[:id])
   end
 
   def new
@@ -13,12 +19,13 @@ class TasksController < ApplicationController
   end
 
   def create
-    @task =Task.new(task_params)
+    @task =current_user.tasks.build(task_params)
     
     if @task.save
       flash[:success] = "タスクが正常に作成されました"
       redirect_to @task
     else
+      @tasks =current_user.tasks.order("created_at DESC").page(params[:page])
       flash.now[:error] = "タスク追加に失敗しました"
       render :new
     end
